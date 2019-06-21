@@ -11,7 +11,7 @@
       "type": "googlecompute",
       "project_id": "{{user  `project_id`}}",
       "machine_type": "{{user  `machine_type`}}",
-      "source_image": "{{user  `source_image_family`}}",
+      "image_family": "{{user  `source_image_family`}}",
       "region": "{{user  `region`}}",
       "zone": "{{user  `zone`}}",
       "image_description": "Debian9-{{isotime \"20060102\"}}-{{timestamp}}",
