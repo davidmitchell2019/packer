@@ -1,6 +1,6 @@
 {
   "variables": {
-    "source_image_family": "ubuntu-1804-lts",
+    "source_image_to_use": "ubuntu-1804",
     "machine_type": "f1-micro",
     "region": "europe-west2",
     "zone": "europe-west2-b",
@@ -11,7 +11,7 @@
       "type": "googlecompute",
       "project_id": "{{user  `project_id`}}",
       "machine_type": "{{user  `machine_type`}}",
-      "source_image_family": "{{user  `source_image_family`}}",
+      "source_image": "{{user  `source_image_to_use`}}",
       "region": "{{user  `region`}}",
       "zone": "{{user  `zone`}}",
       "image_description": "Debian9-{{isotime \"20060102\"}}-{{timestamp}}",
