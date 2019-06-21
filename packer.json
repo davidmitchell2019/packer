@@ -1,20 +1,13 @@
 {
-  "variables": {
-    "source_image_family": "debian-9",
-    "machine_type": "f1-micro",
-    "region": "europe-west2",
-    "zone": "europe-west2-b",
-    "project_id": "gra-jupyter-vm"
-  },
   "builders": [
     {
       "type": "googlecompute",
       "account_file": "credentials.json",
-      "project_id": "{{user  `project_id`}}",
-      "machine_type": "{{user  `machine_type`}}",
-      "source_image_family": "{{user  `source_image_family`}}",
-      "region": "{{user  `region`}}",
-      "zone": "{{user  `zone`}}",
+      "project_id": "gra-jupyter-vm",
+      "machine_type": "f1-micro",
+      "source_image_family": "debian-9",
+      "region": "europe-west2",
+      "zone": "europe-west2-b",
       "image_description": "Debian9-{{isotime \"20060102\"}}-{{timestamp}}",
       "image_name": "jupytr-{{isotime \"20060102\"}}-{{timestamp}}",
       "disk_size": 16,
