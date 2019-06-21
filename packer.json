@@ -1,6 +1,6 @@
 {
   "variables": {
-    "source_image_family": "debian-9",
+    "source_image_family": "debian-cloud",
     "machine_type": "f1-micro",
     "region": "europe-west2",
     "zone": "europe-west2-b",
