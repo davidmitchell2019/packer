@@ -1,6 +1,6 @@
 {
   "variables": {
-    "source_image_to_use": "ubuntu-1804",
+    "source_image_to_use": "ubuntu-1804-bionic-v20190617",
     "machine_type": "f1-micro",
     "region": "europe-west2",
     "zone": "europe-west2-b",
