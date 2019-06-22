@@ -1,9 +1,9 @@
 - name: jupyter install
-  hosts: 127.0.0.1
-  connection: local
+  hosts: all
   become: yes
+
   tasks:
-  - name: Include vars of stuff.yaml into the 'stuff' variable (2.2).
+  - name: Include vars file.
     include_vars:
       file: vars.yaml
 
