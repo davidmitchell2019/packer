@@ -26,8 +26,8 @@
   ],
   "provisioners": [
     {
-      "type": "shell",
-      "script": "install-script.sh"
+      "type": "ansible",
+      "playbook_file": "jupyter.yml"
     }
   ]
 }

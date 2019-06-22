@@ -1,0 +1,81 @@
+- name: jupyter install
+  hosts: 127.0.0.1
+  connection: local
+  become: yes
+  tasks:
+  - name: Include vars of stuff.yaml into the 'stuff' variable (2.2).
+    include_vars:
+      file: vars.yaml
+
+  - name: Install prerequisite packages
+    become: true
+    action: >
+      {{ ansible_pkg_mgr }} name={{ item }} state=present update_cache=yes
+    with_items:
+      - crudini
+
+  - name: Download anaconda installer
+    get_url:
+      url: "https://repo.continuum.io/archive/{{ anafile }}"
+      dest: "{{ ansible_env.HOME }}/{{ anafile }}"
+
+  - name: Install anaconda and jupyter
+    shell: "bash {{ anafile }} -b"
+    args:
+      creates: "{{ ansible_env.HOME }}/anaconda3"
+
+  - name: Create bash_profile
+    file:
+      path: "{{ ansible_env.HOME }}/.bash_profile"
+      state: touch
+
+  - name: Add Anaconda to bash_profile
+    lineinfile:
+      state: present
+      path: "{{ ansible_env.HOME }}/.bash_profile"
+      regexp: '^export.*anaconda3.*PATH$'
+      line: "export PATH={{ ansible_env.HOME }}/anaconda3/bin:$PATH"
+
+  - name: Generate self-signed cert
+    shell: "openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout mykey.key -out mycert.pem -batch"
+    args:
+      creates: "{{ ansible_env.HOME }}/mykey.key"
+
+  - name: Generate jupyter config
+    shell: "{{ ansible_env.HOME }}/anaconda3/bin/jupyter notebook --generate-config --allow-root"
+    args:
+      creates: "{{ ansible_env.HOME }}/.jupyter/jupyter_notebook_config.py"
+
+  # master only
+  - name: Generate jupyter password
+    shell: "PYTHONPATH={{ ansible_env.HOME }}/anaconda3/lib/python3.6/site-packages python -c 'from notebook.auth import passwd; print(passwd(\"{{ jpassword }}\"))'"
+
+  - name: Modify jupyter config
+    become: true
+    command: "{{ item }}"
+    args:
+      chdir: "{{ ansible_env.HOME }}"
+    with_items:
+      - crudini --set .jupyter/jupyter_notebook_config.py '' c.NotebookApp.certfile u\'{{ ansible_env.HOME }}/mycert.pem\'
+      - crudini --set .jupyter/jupyter_notebook_config.py '' c.NotebookApp.ip \'*\'
+      - crudini --set .jupyter/jupyter_notebook_config.py '' c.NotebookApp.keyfile u\'{{ ansible_env.HOME }}/mykey.key\'
+      - crudini --set .jupyter/jupyter_notebook_config.py '' c.NotebookApp.notebook_dir u\'$HOME/notebook\'
+      - crudini --set .jupyter/jupyter_notebook_config.py '' c.NotebookApp.open_browser False
+      - crudini --set .jupyter/jupyter_notebook_config.py '' c.NotebookApp.port {{ jport }}
+      - crudini --set .jupyter/jupyter_notebook_config.py '' c.NotebookApp.password u\'{{ jpasswordhash.stdout }}\'
+
+  - name: Create notebook directory
+    when: inventory_hostname in groups['master']
+    file:
+      path: "{{ notebookdir }}"
+      state: directory
+
+  - name: Connection info
+    when: inventory_hostname in groups['master']
+    debug:
+      msg:
+        - "*** Jupyter Notebook installed. Launch by re-sourcing your .bash_profile and running the notebook: ***"
+        - "*** source ~/.bash_profile ***"
+        - "*** jupyter notebook --allow-root ***"
+        - "*** Then point your browser at: ***"
+        - "*** https://YOUR_PUBLIC_IP:{{ jport }} ***"
