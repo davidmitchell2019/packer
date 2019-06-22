@@ -12,7 +12,7 @@ export PATH=~/anaconda/bin:$PATH
 conda update conda -y
 conda install -c conda-forge pyspark
 
-
+#nothing
 ###############post installation #############################
 #gcloud compute ssh jupytr-instance
 #sudo su cloud-user
